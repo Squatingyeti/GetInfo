@@ -1,0 +1,9 @@
+name: WhoIs
+main: net.yeticraft.squatingyeti.WhoIs.WhoIs
+version: 1.0
+description: >
+             WhoIs
+commands:
+  whois: 
+    description: gathers information of a player
+    usage: /WhoIs
