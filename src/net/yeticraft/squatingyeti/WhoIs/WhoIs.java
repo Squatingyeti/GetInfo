@@ -19,16 +19,7 @@ public class WhoIs extends JavaPlugin {
 	private static Permission permissions = null;
 	private static boolean usingVault = false;
 	private static boolean usingPermissions = false;
-	
-	public void onDisable() {
-		log.info("WhoIs has been disabled");
-	}
-	
-	public void onEnable() {
-		log.info("WhoIs has been enabled");
-		initializeVault();
-	}
-	
+
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args, Player target) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("This command only works in-game");
@@ -47,11 +38,19 @@ public class WhoIs extends JavaPlugin {
 			return true;
 		}
 		if (label.equalsIgnoreCase("whois")) {
-			if (oPlayer.get)
 			
 		}
 	}
 	
+	
+	public void onDisable() {
+		log.info("WhoIs has been disabled");
+	}
+	
+	public void onEnable() {
+		log.info("WhoIs has been enabled");
+		initializeVault();
+	}
 	public static Permission getPermissions() {
 		return permissions;
 	}
