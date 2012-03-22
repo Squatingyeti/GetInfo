@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class WhoIs extends JavaPlugin {
 		initializeVault();
 	}
 	
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args, Player target) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("This command only works in-game");
 			return true;
@@ -36,6 +37,19 @@ public class WhoIs extends JavaPlugin {
 		
 		Player player = (Player) sender;
 		String targetName = args[0].toLowerCase();
+		Player oPlayer = (Player) target;
+		if (args.length == 0 ) {
+			sender.sendMessage(ChatColor.YELLOW + "You must specify a player");
+			return true;
+		}
+		if (args.length >= 2) {
+			sender.sendMessage(ChatColor.YELLOW + "Too many arguments. Try /whois help");
+			return true;
+		}
+		if (label.equalsIgnoreCase("whois")) {
+			if (oPlayer.get)
+			
+		}
 	}
 	
 	public static Permission getPermissions() {
@@ -73,11 +87,11 @@ public class WhoIs extends JavaPlugin {
 				log.info("[WhoIs] found [" + permissions.getName() + "] plugin. Prices enabled.");
 			}
 				else if (!setupPermissions()) {
-					log.info("[SEVERE][WhoIs] permissions plugin not found.");
+					log.severe("[WhoIs] permissions plugin not found.");
 					usingPermissions = false;
 				}
 		}else {
-			log.info("[SEVERE][WhoIs] could not find [Vault]!");
+			log.severe("[WhoIs] could not find [Vault]!");
 			usingVault = false;
 		}
 	}
