@@ -1,9 +1,9 @@
-name: WhoIs
-main: net.yeticraft.squatingyeti.WhoIs.WhoIs
+name: GetInfo
+main: net.yeticraft.squatingyeti.GetInfo.GetInfo
 version: 1.0
 description: >
-             WhoIs
+             GetInfo
 commands:
-  whois: 
+  getinfo: 
     description: gathers information of a player
-    usage: /WhoIs
+    usage: /Getinfo
