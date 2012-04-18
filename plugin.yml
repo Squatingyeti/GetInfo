@@ -6,4 +6,3 @@ description: >
 commands:
   getinfo: 
     description: gathers information of a player
-    usage: /Getinfo
