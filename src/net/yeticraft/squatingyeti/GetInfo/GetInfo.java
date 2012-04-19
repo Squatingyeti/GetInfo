@@ -4,12 +4,14 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.permission.Permission;
-import net.yeticraft.squatingyeti.YetiHome.*;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +21,6 @@ import java.text.SimpleDateFormat;
 
 public class GetInfo extends JavaPlugin {
 
-	public HomeManager homes;
 	public Logger log = Logger.getLogger("Minecraft");
 	private static Permission permissions = null;
 	private static boolean usingVault = false;
@@ -46,15 +47,20 @@ public class GetInfo extends JavaPlugin {
 			Player target = findOnlinePlayer(args[0]);
 			
             if (target != null) {
+
             	//target = findOnlinePlayer(args[0]);
                 Player sendPlayer = (Player) sender;
                 String owner = target.getName();
+                float level = target.getLevel();
                 float exp = target.getExp();
                 int x = target.getLocation().getBlockX();
                 int y = target.getLocation().getBlockY();
                 int z = target.getLocation().getBlockZ();
                 int health = target.getHealth();
                 short playDays;
+                EntityDamageEvent damageEvent = target.getLastDamageCause();
+                String dmgCause = getDamageCause(damageEvent);
+
                 //String zone = zones.currentZone(loc, owner);
                 firstPlayed = new Date (target.getFirstPlayed());
 				lastPlayed = new Date(target.getLastPlayed());
@@ -69,10 +75,12 @@ public class GetInfo extends JavaPlugin {
 							+ChatColor.GRAY + " z:" +ChatColor.GREEN + z);
 					sendPlayer.performCommand("getzone " + owner);
 					player.sendMessage(ChatColor.GRAY + "Health: " +ChatColor.GREEN + health);
+					player.sendMessage(ChatColor.GRAY + "Level: " + ChatColor.GREEN + level);
 					player.sendMessage(ChatColor.GRAY + "Experience: " +ChatColor.GREEN + exp);
 					player.sendMessage(ChatColor.GRAY + "Holding: " + ChatColor.GREEN + target.getItemInHand());
-					player.sendMessage(ChatColor.GRAY + "Last Damager " + ChatColor.GREEN + target.getLastDamageCause());
-					sendPlayer.performCommand("listhomes " + owner.toString());
+					player.sendMessage(ChatColor.GRAY + "Last Damager " + ChatColor.GREEN + dmgCause);
+					player.sendMessage(ChatColor.GRAY + "Last Killer " +ChatColor.GREEN + getKiller(target));
+					sendPlayer.performCommand("listhomes " + owner);
 					return true;
 				}
             
@@ -94,6 +102,7 @@ public class GetInfo extends JavaPlugin {
 					player.sendMessage("First Played " +(new SimpleDateFormat()).format(firstPlayed));
 					player.sendMessage("Last Played " + (new SimpleDateFormat()).format(lastPlayed));
 					player.sendMessage("Days Played: " + playDays);
+					player.performCommand("listhomes " + oPlayer);
 					return true;
 			}
 		} return false;
@@ -178,5 +187,81 @@ public class GetInfo extends JavaPlugin {
 				}	
 			} return p;
 		} return null;
+	}
+	
+	public String getDamageCause(EntityDamageEvent event) {
+		if (event != null) {
+			DamageCause cause = event.getCause();
+			
+			if (cause == DamageCause.BLOCK_EXPLOSION || cause == DamageCause.ENTITY_EXPLOSION) {
+				if(event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)event).getDamager() instanceof Creeper)
+						return "Creeper";
+					return "Explosion";
+			}
+			if (cause == DamageCause.FALL)
+				return "Fall";
+			if (cause == DamageCause.DROWNING)
+				return "Drowning";
+			if (cause == DamageCause.FIRE || cause == DamageCause.FIRE_TICK)
+				return "Fire";
+			if (cause == DamageCause.LAVA)
+				return "Lava";
+			if (cause == DamageCause.STARVATION)
+				return "Starvation";
+			if (cause == DamageCause.SUFFOCATION)
+				return "Suffocation";
+			
+			if (cause == DamageCause.ENTITY_ATTACK && (event instanceof EntityDamageByEntityEvent)) {
+				EntityDamageByEntityEvent eEvent = (EntityDamageByEntityEvent)event;
+				Entity damager = eEvent.getDamager();
+				if (damager instanceof Projectile)
+					damager = ((Projectile)damager).getShooter();
+					
+				
+				if (damager instanceof Player)
+					return "Player";
+				if (damager instanceof Wolf)
+					return "Wolf";
+				if (damager instanceof Skeleton)
+					return "Skeleton";
+				if (damager instanceof Zombie)
+					return "Zombie";
+				if (damager instanceof Slime)
+					return "Slime";
+				if (damager instanceof PigZombie)
+					return "PigZombie";
+				if (damager instanceof Ocelot)
+					return "Ocelot";
+				if (damager instanceof Enderman)
+					return "Enderman";
+				if (damager instanceof LightningStrike)
+					return "Lightning";
+				if (damager instanceof Blaze)
+					return "Blaze";
+				if (damager instanceof CaveSpider)
+					return "CaveSpider";
+				if (damager instanceof Spider)
+					return "Spider";
+				if (damager instanceof ThrownPotion)
+					return "Potion";
+				if (damager instanceof Minecart)
+					return "MineCart";
+				if (damager instanceof Silverfish)
+					return "Silverfish";
+				if (damager instanceof EnderDragon)
+					return "EnderDragon";
+				
+					
+			}
+		} return "Unknown";
+	} 
+	
+	public String getKiller(Player target) {
+		String killer;
+		if (target.getKiller() != null){
+			killer = target.getKiller().getName();
+			return (killer);
+		
+		}return "None";
 	}
 }
