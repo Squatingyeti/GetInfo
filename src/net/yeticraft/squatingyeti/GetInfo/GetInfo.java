@@ -4,10 +4,8 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.permission.Permission;
-import net.yeticraft.squatingyeti.GetZone.GetZone;
 import net.yeticraft.squatingyeti.YetiHome.*;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,7 +20,6 @@ import java.text.SimpleDateFormat;
 public class GetInfo extends JavaPlugin {
 
 	public HomeManager homes;
-	public GetZone zones;
 	public Logger log = Logger.getLogger("Minecraft");
 	private static Permission permissions = null;
 	private static boolean usingVault = false;
@@ -51,12 +48,8 @@ public class GetInfo extends JavaPlugin {
             if (target != null) {
             	//target = findOnlinePlayer(args[0]);
                 Player sendPlayer = (Player) sender;
-                log.info("Sender: " +player);
                 String owner = target.getName();
-                log.info(owner);
                 float exp = target.getExp();
-                Location loc = target.getLocation();
-                log.info("loc: " +loc);
                 int x = target.getLocation().getBlockX();
                 int y = target.getLocation().getBlockY();
                 int z = target.getLocation().getBlockZ();
@@ -68,14 +61,18 @@ public class GetInfo extends JavaPlugin {
 				playDays = (short)((System.currentTimeMillis() - target.getFirstPlayed()) / 86400000);
 					player.sendMessage(ChatColor.GREEN + owner);
 					player.sendMessage(ChatColor.YELLOW + "================================");
-					player.sendMessage("First Played " +(new SimpleDateFormat()).format(firstPlayed));
-					player.sendMessage("Last Played " + (new SimpleDateFormat()).format(lastPlayed));
-					player.sendMessage("Location: x:" + x + " y:" + y + " z:" + z);
-					player.sendMessage("Zone: " +  zones.getZoneOther(player, target));
-					player.sendMessage("Days Played: " + playDays);
-					player.sendMessage("Health: " + health);
-					player.sendMessage("Experience: " + exp);
-					sendPlayer.performCommand("listhomes" + owner);
+					player.sendMessage(ChatColor.GRAY + "First Played " + ChatColor.GREEN + (new SimpleDateFormat()).format(firstPlayed));
+					player.sendMessage(ChatColor.GRAY + "Last Played " +ChatColor.GREEN + (new SimpleDateFormat()).format(lastPlayed));
+					
+					player.sendMessage(ChatColor.GRAY + "Days Played: " + ChatColor.GREEN + playDays);
+					player.sendMessage(ChatColor.GRAY + "Location: x:" +ChatColor.GREEN+ x + ChatColor.GRAY + " y:" +ChatColor.GREEN+ y 
+							+ChatColor.GRAY + " z:" +ChatColor.GREEN + z);
+					sendPlayer.performCommand("getzone " + owner);
+					player.sendMessage(ChatColor.GRAY + "Health: " +ChatColor.GREEN + health);
+					player.sendMessage(ChatColor.GRAY + "Experience: " +ChatColor.GREEN + exp);
+					player.sendMessage(ChatColor.GRAY + "Holding: " + ChatColor.GREEN + target.getItemInHand());
+					player.sendMessage(ChatColor.GRAY + "Last Damager " + ChatColor.GREEN + target.getLastDamageCause());
+					sendPlayer.performCommand("listhomes " + owner.toString());
 					return true;
 				}
             
