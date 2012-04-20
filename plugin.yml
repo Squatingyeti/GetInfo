@@ -6,3 +6,8 @@ description: >
 commands:
   getinfo: 
     description: gathers information of a player
+    usage: </command> [name]
+permissions:
+  getinfo.all:
+    description: gives more information to staff
+    default: op

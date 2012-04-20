@@ -48,40 +48,39 @@ public class GetInfo extends JavaPlugin {
 			
             if (target != null) {
 
-            	//target = findOnlinePlayer(args[0]);
                 Player sendPlayer = (Player) sender;
                 String owner = target.getName();
                 float level = target.getLevel();
-                float exp = target.getExp();
                 int x = target.getLocation().getBlockX();
                 int y = target.getLocation().getBlockY();
                 int z = target.getLocation().getBlockZ();
                 int health = target.getHealth();
                 short playDays;
+                String faction = getFaction(target);
                 EntityDamageEvent damageEvent = target.getLastDamageCause();
                 String dmgCause = getDamageCause(damageEvent);
-
-                //String zone = zones.currentZone(loc, owner);
                 firstPlayed = new Date (target.getFirstPlayed());
 				lastPlayed = new Date(target.getLastPlayed());
 				playDays = (short)((System.currentTimeMillis() - target.getFirstPlayed()) / 86400000);
+					
 					player.sendMessage(ChatColor.GREEN + owner);
 					player.sendMessage(ChatColor.YELLOW + "================================");
-					player.sendMessage(ChatColor.GRAY + "First Played " + ChatColor.GREEN + (new SimpleDateFormat()).format(firstPlayed));
-					player.sendMessage(ChatColor.GRAY + "Last Played " +ChatColor.GREEN + (new SimpleDateFormat()).format(lastPlayed));
-					
+					player.sendMessage(ChatColor.GRAY + "First Played: " + ChatColor.GREEN + (new SimpleDateFormat()).format(firstPlayed));
+					player.sendMessage(ChatColor.GRAY + "Last Played: " +ChatColor.GREEN + (new SimpleDateFormat()).format(lastPlayed));
 					player.sendMessage(ChatColor.GRAY + "Days Played: " + ChatColor.GREEN + playDays);
-					player.sendMessage(ChatColor.GRAY + "Location: x:" +ChatColor.GREEN+ x + ChatColor.GRAY + " y:" +ChatColor.GREEN+ y 
+					player.sendMessage(ChatColor.GRAY + "Faction: " +ChatColor.GREEN + faction);
+					player.sendMessage(ChatColor.GRAY + "Last Damager: " + ChatColor.GREEN + dmgCause);
+					if (player.hasPermission("getinfo.all")){
+						player.sendMessage(ChatColor.GRAY + "Location: x:" +ChatColor.GREEN+ x + ChatColor.GRAY + " y:" +ChatColor.GREEN+ y 
 							+ChatColor.GRAY + " z:" +ChatColor.GREEN + z);
-					sendPlayer.performCommand("getzone " + owner);
-					player.sendMessage(ChatColor.GRAY + "Health: " +ChatColor.GREEN + health);
-					player.sendMessage(ChatColor.GRAY + "Level: " + ChatColor.GREEN + level);
-					player.sendMessage(ChatColor.GRAY + "Experience: " +ChatColor.GREEN + exp);
-					player.sendMessage(ChatColor.GRAY + "Holding: " + ChatColor.GREEN + target.getItemInHand());
-					player.sendMessage(ChatColor.GRAY + "Last Damager " + ChatColor.GREEN + dmgCause);
-					player.sendMessage(ChatColor.GRAY + "Last Killer " +ChatColor.GREEN + getKiller(target));
-					sendPlayer.performCommand("listhomes " + owner);
-					return true;
+						sendPlayer.performCommand("getzone " + owner);
+						player.sendMessage(ChatColor.GRAY + "Health: " +ChatColor.GREEN + health);
+						player.sendMessage(ChatColor.GRAY + "Level: " + ChatColor.GREEN + level);
+						player.sendMessage(ChatColor.GRAY + "Holding: " + ChatColor.GREEN + target.getItemInHand());
+						//player.sendMessage(ChatColor.GRAY + "Last Killer " +ChatColor.GREEN + getKiller(target));
+						sendPlayer.performCommand("listhomes " + owner);
+						return true;
+					} return true;
 				}
             
 
@@ -99,13 +98,14 @@ public class GetInfo extends JavaPlugin {
 					player.sendMessage(ChatColor.GREEN + offPlayer);
 					player.sendMessage(ChatColor.YELLOW + "================================");
 					player.sendMessage(ChatColor.GREEN + offPlayer + ChatColor.RED + " is not online");
-					player.sendMessage("First Played " +(new SimpleDateFormat()).format(firstPlayed));
-					player.sendMessage("Last Played " + (new SimpleDateFormat()).format(lastPlayed));
-					player.sendMessage("Days Played: " + playDays);
-					player.performCommand("listhomes " + oPlayer);
+					player.sendMessage(ChatColor.GRAY + "First Played " +ChatColor.GREEN +(new SimpleDateFormat()).format(firstPlayed));
+					player.sendMessage(ChatColor.GRAY + "Last Played " +ChatColor.GREEN + (new SimpleDateFormat()).format(lastPlayed));
+					player.sendMessage(ChatColor.GRAY + "Days Played: " +ChatColor.GREEN + playDays);
+					if (player.hasPermission("getinfo.all"))
+					player.performCommand("listhomes " + offPlayer);
 					return true;
 			}
-		} return false;
+		} return true;
 	}	
 
 
@@ -263,5 +263,21 @@ public class GetInfo extends JavaPlugin {
 			return (killer);
 		
 		}return "None";
+	}
+	
+	public String getFaction(Player target) {
+		if (target.hasPermission("almas.member"))
+			return "Almas";
+		if (target.hasPermission("sasquai.member") && (!target.hasPermission("sasquaifront.member")))
+			return "Sasquai";
+		if (target.hasPermission("yowie.member") && (!target.hasPermission("yowiefront.member")))
+			return "Yowie";
+		if (target.hasPermission("sasquaifront.member") && (target.hasPermission("sasquai.member")))
+			return "Sasquai Front";
+		if (target.hasPermission("yowiefront.member") && (target.hasPermission("yowie.member")))
+			return "Yowie Front";
+		if (target.hasPermission("default.member"))
+			return "Starter";
+	return "Unknown";
 	}
 }
